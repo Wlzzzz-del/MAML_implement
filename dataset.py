@@ -18,8 +18,8 @@ class FewShotDataset(data.Dataset):
         self.split = split
 
         # 根据在什么集上切分来读取训练和测试集
-        self.img_ids = self.task.train_ids if self.split == 'train' else self.val_ids
-        self.labels = self.task.train_labels if self.split == 'train' else self.val_labels
+        self.img_ids = self.task.train_ids if self.split == 'train' else self.task.val_ids
+        self.labels = self.task.train_labels if self.split == 'train' else self.task.val_labels
     def __len__(self):
         return len(self.img_ids)
     def __getitem__(self, index):
@@ -44,7 +44,7 @@ class Omniglot(FewShotDataset):
 
     def __getitem__(self, idx):
         img_id = self.img_ids[idx]
-        im = self.load_image(idx)
+        im = self.load_image(img_id)
         # 如果对数据做变换的参数不为空，则做变换
         if self.transform is not None:
             im = self.transform(im)
@@ -60,7 +60,7 @@ class MNIST(FewShotDataset):
         pass
     def load_image(self, idx):
         # NOTE:在黑白图数据上使用RGB是因为Torch使用黑白图会导致错误
-        im = Image.open("{}/{}.png".format(self.root, idx)).convert("RGB")
+        im = Image.open("{}/{}.jpg".format(self.root, idx)).convert("RGB")
         im = np.array(im)
         return im
     def __getitem__(self, idx):
